@@ -35,17 +35,8 @@ def pre_update(ctx, ref=settings.UPDATE_REF):
     with ctx.lcd(th_service_src):
         ctx.local('git fetch --quiet origin %s' % ref)
         ctx.local('git reset --hard FETCH_HEAD')
-        # Fail early if we've forgotten to run grunt build before deploy.
-        # This is easier to do (and more necessary) - now that dist/ is not
-        # present on master, and only created on the stage/production branches.
-        if not os.path.isfile(os.path.join(th_service_src, 'dist', 'index.html')):
-            raise Exception("Grunt build hasn't been run and committed to the repo!")
         ctx.local('find . -type f -name "*.pyc" -delete')
-        # Remove gzipped UI assets in case the uncompressed original no longer exists.
-        ctx.local('find dist/ -type f -name "*.gz" -delete')
         ctx.local('git status -s')
-        # Make the current Git revision accessible at <site-root>/revision.txt
-        ctx.local('git rev-parse HEAD > dist/revision.txt')
 
 
 @task
@@ -73,6 +64,12 @@ def update(ctx):
         # collectstatic should be performed on one of the stage/prod specific
         # nodes at the end of the deploy, rather than on the admin node.
 
+        # Install nodejs packages required for grunt build.
+        ctx.local("npm install --production")
+        # Generate the UI assets in the `dist/` directory.
+        ctx.local("./node_modules/.bin/grunt build --production")
+        # Make the current Git revision accessible at <site-root>/revision.txt
+        ctx.local("git rev-parse HEAD > dist/revision.txt")
         # Generate gzipped versions of files that would benefit from compression, that
         # WhiteNoise can then serve in preference to the originals. This is required
         # since WhiteNoise's Django storage backend only gzips assets handled by
