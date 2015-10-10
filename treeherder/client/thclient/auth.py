@@ -3,6 +3,7 @@ import time
 
 import oauth2 as oauth
 from requests.auth import AuthBase
+from requests_hawk import HawkAuth
 
 logger = logging.getLogger(__name__)
 
@@ -51,3 +52,14 @@ class TreeherderAuth(AuthBase):
         req.sign_request(signature_method, consumer, token)
 
         return req.to_url()
+
+
+class TreeherderHawkAuth(HawkAuth):
+    """Thin wrapper around HawkAuth to reduce boilerplate."""
+    def __init__(self, client_id, secret):
+        credentials = {
+            'id': client_id,
+            'key': secret,
+            'algorithm': 'sha256'
+        }
+        return super(TreeherderHawkAuth, self).__init__(credentials=credentials)

@@ -8,11 +8,11 @@ import pytest
 import responses
 from django.core.management import call_command
 from requests import Request
-from requests_hawk import HawkAuth
 from webtest.app import TestApp
 
 from tests.sampledata import SampleData
-from treeherder.client import TreeherderClient
+from treeherder.client import (TreeherderClient,
+                               TreeherderHawkAuth)
 from treeherder.config.wsgi import application
 from treeherder.etl.oauth_utils import OAuthCredentials
 
@@ -346,11 +346,7 @@ def mock_post_json(monkeypatch, client_credentials):
 
         auth = auth or th_client.auth
         if not auth:
-            auth = HawkAuth(credentials={
-                'id': client_credentials.client_id,
-                'key': str(client_credentials.secret),
-                'algorithm': 'sha256'
-            })
+            auth = TreeherderHawkAuth(client_credentials.client_id, str(client_credentials.secret))
         app = TestApp(application)
         uri = th_client._get_project_uri(project, endpoint)
         req = Request('POST', uri, json=data, auth=auth)
