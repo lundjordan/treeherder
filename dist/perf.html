@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html ng-app="perf">
+<head>
+    <meta charset="utf-8">
+    <title>Perfherder</title>
+    <link rel="stylesheet" href="css/perf.min-c1877513a11727f34f973f57f35296ea.css" media="screen">
+    <link id="favicon" type="image/png" rel="shortcut icon" href="img/line_chart.png">
+    <style>
+    </style>
+</head>
+<body>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <ul class="nav navbar-nav">
+        <li>
+          <span class="dropdown">
+            <button id="perf-logo" title="Treeherder services" role="button"
+                    href="#" data-toggle="dropdown" data-target="#">Perfherder
+              <span class="fa fa-angle-down lightgray"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="perf-logo">
+              <li><a href="/">Treeherder</a></li>
+            </ul>
+          </span>
+        </li>
+        <li ng-class="{active: $state.includes('graphs')}"><a ui-sref="graphs">Graphs</a></li>
+        <li ng-class="{active: $state.current.name.indexOf('compare') >= 0}">
+          <a ui-sref="comparechooser">Compare</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <section ui-view>
+  </section>
+
+
+
+  <script src="js/perf.min-f2b262bc60ac10e6b663997859b8ee91.js"></script>
+
+</body>
+</html>
